@@ -5,6 +5,7 @@ from typing import Any
 class DataProcessor(ABC):
     def __init__(self, rank: int):
         self.rank = rank
+        self.data = []
 
     @abstractmethod
     def validate(self, data: Any) -> bool:
@@ -15,15 +16,21 @@ class DataProcessor(ABC):
         pass
 
     def output(self) -> tuple[int, str]:
+        value = self.data.pop(0) = []
+        return (self.rank, value)
 
 
 class NumericProcessor(DataProcessor):
+	
 
 
 class TextProcessor(DataProcessor):
 
 
-class class LogProcessor(DataProcessor):
+class LogProcessor(DataProcessor):
 
 
 if __name__ == "__main__":
+print("=== Code Nexus - Data Processor ===")
+print()
+print("Testing Numeric Processor...")
