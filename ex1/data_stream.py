@@ -91,12 +91,16 @@ class LogProcessor(DataProcessor):
 
     def validate(self, data: Any) -> bool:
         if isinstance(data, dict):
-            return all(isinstance(key, str) and isinstance(value, str)
-                       for key, value in data.items())
+            return ("log_level" in data
+                    and "log_message" in data
+                    and all(isinstance(key, str) and isinstance(value, str)
+                            for key, value in data.items()))
 
         if isinstance(data, list):
             return all(
                 isinstance(item, dict)
+                and "log_level" in item
+                and "log_message" in item
                 and all(
                     isinstance(key, str) and isinstance(value, str)
                     for key, value in item.items()
