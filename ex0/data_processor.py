@@ -119,7 +119,7 @@ def main() -> None:
     print("Test invalid ingestion of string 'foo' without prior validation:")
 
     try:
-        numeric.ingest("foo")
+        numeric.ingest("foo")  # type: ignore[arg-type]
     except TypeError as err:
         print(f"Got exception: {err}")
 
