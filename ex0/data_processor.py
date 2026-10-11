@@ -73,12 +73,16 @@ class TextProcessor(DataProcessor):
 class LogProcessor(DataProcessor):
     def validate(self, data: Any) -> bool:
         if isinstance(data, dict):
-            return all(isinstance(key, str) and isinstance(value, str)
-                       for key, value in data.items())
+            return ("log_level" in data
+                    and "log_message" in data
+                    and all(isinstance(key, str) and isinstance(value, str)
+                            for key, value in data.items()))
 
         if isinstance(data, list):
             return all(
                 isinstance(item, dict)
+                and "log_level" in item
+                and "log_message" in item
                 and all(
                     isinstance(key, str) and isinstance(value, str)
                     for key, value in item.items()
@@ -109,49 +113,50 @@ def main() -> None:
     print("=== Code Nexus - Data Processor ===")
     print()
     print("Testing Numeric Processor...")
-    Numeric = NumericProcessor()
-    print(f"Trying to validate input '42': {Numeric.validate(42)}")
-    print(f"Trying to validate input 'Hello': {Numeric.validate('Hello')}")
+    numeric = NumericProcessor()
+    print(f"Trying to validate input '42': {numeric.validate(42)}")
+    print(f"Trying to validate input 'Hello': {numeric.validate('Hello')}")
     print("Test invalid ingestion of string 'foo' without prior validation:")
 
     try:
-        Numeric.ingest("foo")
+        numeric.ingest("foo")
     except TypeError as err:
-        print(f"ot exception: {err}")
+        print(f"Got exception: {err}")
 
     print("Processing data: [1, 2, 3, 4, 5]")
-    Numeric.ingest([1, 2, 3, 4, 5])
+    numeric.ingest([1, 2, 3, 4, 5])
     print("Extracting 3 values...")
     for _ in range(3):
-        rank, value = Numeric.output()
-        print(f"Numeric value {rank}: {value}")    
+        rank, value = numeric.output()
+        print(f"Numeric value {rank}: {value}")
 
     print()
     print("Testing Text Processor...")
-    Text = TextProcessor()
-    print(f"Trying to validate input '42': {Text.validate(42)}")
+    text = TextProcessor()
+    print(f"Trying to validate input '42': {text.validate(42)}")
     print("Processing data: ['Hello', 'Nexus', 'World']")
-    Text.ingest(["Hello", "Nexus", "World"])
+    text.ingest(["Hello", "Nexus", "World"])
     print("Extracting 1 value...")
-    rank, value = Text.output()
+    rank, value = text.output()
     print(f"Text value {rank}: {value}")
 
     print()
     print("Testing Log Processor...")
-    Log = LogProcessor()
-    print(f"Trying to validate input 'Hello': {Log.validate('Hello')}")
-    
-    Log_data = [
-    {'log_level': 'NOTICE', 'log_message': 'Connection to server'},
-    {'log_level': 'ERROR', 'log_message': 'Unauthorized access!!'}
-	]
-    print(f"Processing data: {Log_data}")
-    Log.ingest(Log_data)
+    log = LogProcessor()
+    print(f"Trying to validate input 'Hello': {log.validate('Hello')}")
+
+    log_data = [
+        {'log_level': 'NOTICE', 'log_message': 'Connection to server'},
+        {'log_level': 'ERROR', 'log_message': 'Unauthorized access!!'}
+    ]
+    print(f"Processing data: {log_data}")
+    log.ingest(log_data)
     print("Extracting 2 values...")
 
     for _ in range(2):
-        rank, value = Log.output()
+        rank, value = log.output()
         print(f"Log entry {rank}: {value}")
+
 
 if __name__ == "__main__":
     main()
